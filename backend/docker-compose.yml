@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  minio:
+    image: minio/minio
+    container_name: local_minio
+    ports:
+      - "9000:9000" # API Portu (Django buradan konuşacak)
+      - "9001:9001" # Yönetim Paneli (Tarayıcıdan gireceksin)
+    environment:
+      MINIO_ROOT_USER: admin
+      MINIO_ROOT_PASSWORD: password123
+    command: server /data --console-address ":9001"
+    volumes:
+      - ./minio_storage:/data # Dosyalar kaybolmasın diye klasöre map ediyoruz
+
+# Obs. Stack ve diğerleri ileride buraya eklenecek.
