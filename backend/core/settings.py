@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 
 from pathlib import Path
 from datetime import timedelta
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -83,8 +84,12 @@ WSGI_APPLICATION = "core.wsgi.application"
 
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": os.environ.get("DB_NAME", "nexus_drive"),
+        "USER": os.environ.get("DB_USER", "nexus_user"),
+        "PASSWORD": os.environ.get("DB_PASSWORD", "nexus_pass"),
+        "HOST": os.environ.get("DB_HOST", "localhost"),
+        "PORT": "5432",
     }
 }
 
@@ -132,13 +137,25 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 
 # --- MINIO (S3) AYARLARI ---
-AWS_ACCESS_KEY_ID = "admin"  # docker-compose.yml'da verdiğimiz kullanıcı
-AWS_SECRET_ACCESS_KEY = "password123"  # docker-compose.yml'da verdiğimiz şifre
-AWS_STORAGE_BUCKET_NAME = "my-drive-storage"  # MinIO panelinde açtığımız bucket ismi
+AWS_ACCESS_KEY_ID = os.environ.get(
+    "MINIO_ACCESS_KEY", "minioadmin"
+)  # docker-compose.yml'da verdiğimiz kullanıcı
+AWS_SECRET_ACCESS_KEY = os.environ.get(
+    "MINIO_SECRET_KEY", "minioadmin"
+)  # docker-compose.yml'da verdiğimiz şifre
+AWS_STORAGE_BUCKET_NAME = "nexus-drive-bucket"  # MinIO panelinde açtığımız bucket ismi
 AWS_S3_ENDPOINT_URL = (
     "http://localhost:9000"  # Burası çok önemli! 9001 değil, 9000 olacak.
 )
 AWS_S3_USE_SSL = False  # Localde çalıştığımız için SSL yok (https değil http)
+AWS_QUERYSTRING_AUTH = False
+AWS_S3_URL_PROTOCOL = "http:"
+AWS_S3_ENDPOINT_URL = "http://minio:9000"
+AWS_S3_CUSTOM_DOMAIN = "localhost:9000/nexus-drive-bucket"
+
+# Medya Ayarları
+MEDIA_URL = f"http://{AWS_S3_CUSTOM_DOMAIN}/"
+MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 
 # Dosya yükleme işlemleri için S3 backend'ini kullan:
 STORAGES = {

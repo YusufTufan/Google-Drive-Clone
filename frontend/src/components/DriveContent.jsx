@@ -1,4 +1,9 @@
 import { useState, useEffect } from 'react';
+import { 
+  FaFolder, FaFileAlt, FaFileImage, FaFilePdf, FaFileCode, 
+  FaEllipsisV, FaStar, FaExclamationTriangle, FaTrash, 
+  FaShareAlt, FaPen, FaLink, FaUser 
+} from 'react-icons/fa';
 
 const DriveContent = ({ 
   folders, 
@@ -14,7 +19,7 @@ const DriveContent = ({
 }) => {
   const [activeMenu, setActiveMenu] = useState(null);
   const [dragOverFolderId, setDragOverFolderId] = useState(null);
-  const [viewMode, setViewMode] = useState('grid');
+  const [viewMode, setViewMode] = useState('list'); 
   const [selectedItems, setSelectedItems] = useState([]);
 
   useEffect(() => { setSelectedItems([]); }, [currentFolder, currentView]);
@@ -87,47 +92,42 @@ const DriveContent = ({
   };
 
   const getFileIcon = (fileName) => {
-      if (!fileName) return { color: 'text-gray-400', bg: 'bg-gray-50', icon: null };
       const ext = fileName.split('.').pop().toLowerCase();
-      if (['jpg','jpeg','png','gif'].includes(ext)) return { color: 'text-purple-600', bg: 'bg-purple-50', icon: <svg viewBox="0 0 24 24" className="w-8 h-8 fill-current"><path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg> };
-      if (ext === 'pdf') return { color: 'text-red-500', bg: 'bg-red-50', icon: <svg viewBox="0 0 24 24" className="w-8 h-8 fill-current"><path d="M20 2H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-8.5 7.5c0 .83-.67 1.5-1.5 1.5H9v2H7.5V7H10c.83 0 1.5.67 1.5 1.5v1zm5 2c0 .83-.67 1.5-1.5 1.5h-2.5V7H15c.83 0 1.5.67 1.5 1.5v3zm4-3H19v1h1.5V11H19v2h-1.5V7h3v1.5zM9 9.5h1v-1H9v1zM4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm10 5.5h1v-3h-1v3z"/></svg> };
-      return { color: 'text-blue-600', bg: 'bg-blue-50', icon: <svg viewBox="0 0 24 24" className="w-8 h-8 fill-current"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg> };
+      if (['jpg','jpeg','png','gif'].includes(ext)) return { color: 'text-purple-600', bg: 'bg-purple-50', icon: <FaFileImage className="w-8 h-8"/> };
+      if (ext === 'pdf') return { color: 'text-red-500', bg: 'bg-red-50', icon: <FaFilePdf className="w-8 h-8"/> };
+      if (['js', 'html', 'css', 'py'].includes(ext)) return { color: 'text-green-500', bg: 'bg-green-50', icon: <FaFileCode className="w-8 h-8"/> };
+      return { color: 'text-blue-600', bg: 'bg-blue-50', icon: <FaFileAlt className="w-8 h-8"/> };
   };
 
   const ActionMenu = ({ item, type }) => (
-    <div className="absolute top-8 right-2 bg-white shadow-xl border border-gray-200 rounded-lg py-1 z-50 w-48 flex flex-col text-left">
-       {/* 1. Yeniden Adlandır */}
-       <button onClick={(e) => { e.stopPropagation(); onAction('rename', item, type); setActiveMenu(null); }} className="text-left px-4 py-2 hover:bg-gray-100 text-sm flex items-center gap-2">
-           ✏️ Yeniden Adlandır
+    <div className="absolute top-8 right-2 bg-white shadow-xl border border-gray-200 rounded-lg py-1 z-[9999] w-48 flex flex-col text-left animate-fadeIn">
+       <button onClick={(e) => { e.stopPropagation(); onAction('rename', item, type); setActiveMenu(null); }} className="text-left px-4 py-2 hover:bg-gray-100 text-sm flex items-center gap-2 text-gray-700">
+           <FaPen className="text-gray-400" /> Yeniden Adlandır
        </button>
        
-       {/* 2. Paylaş */}
-       <button onClick={(e) => { e.stopPropagation(); onAction('share', item, type); setActiveMenu(null); }} className="text-left px-4 py-2 hover:bg-gray-100 text-sm flex items-center gap-2">
-           👤 Paylaş
+       <button onClick={(e) => { e.stopPropagation(); onAction('share', item, type); setActiveMenu(null); }} className="text-left px-4 py-2 hover:bg-gray-100 text-sm flex items-center gap-2 text-gray-700">
+           <FaShareAlt className="text-gray-400" /> Paylaş
        </button>
 
-       {/* 3. Bağlantıyı Kopyala (Sadece dosyalar için) */}
        {type === 'files' && (
-           <button onClick={(e) => { e.stopPropagation(); onAction('getLink', item, type); setActiveMenu(null); }} className="text-left px-4 py-2 hover:bg-gray-100 text-sm flex items-center gap-2">
-               🔗 Bağlantıyı Kopyala
+           <button onClick={(e) => { e.stopPropagation(); onAction('getLink', item, type); setActiveMenu(null); }} className="text-left px-4 py-2 hover:bg-gray-100 text-sm flex items-center gap-2 text-gray-700">
+               <FaLink className="text-gray-400" /> Bağlantıyı Kopyala
            </button>
        )}
 
-       {/* 4. Yıldızla (EKSİKTİ, GELDİ) */}
-       <button onClick={(e) => { e.stopPropagation(); onAction('star', item, type); setActiveMenu(null); }} className="text-left px-4 py-2 hover:bg-gray-100 text-sm flex items-center gap-2">
-           ⭐ {item.is_starred ? 'Yıldızı Kaldır' : 'Yıldızla'}
+       <button onClick={(e) => { e.stopPropagation(); onAction('star', item, type); setActiveMenu(null); }} className="text-left px-4 py-2 hover:bg-gray-100 text-sm flex items-center gap-2 text-yellow-600">
+           <FaStar /> {item.is_starred ? 'Yıldızı Kaldır' : 'Yıldızla'}
        </button>
 
        <div className="border-t my-1"></div>
 
-       {/* 5. Spam Bildir */}
        <button onClick={(e) => { e.stopPropagation(); onAction('spam', item, type); setActiveMenu(null); }} className="text-left px-4 py-2 hover:bg-gray-100 text-sm text-gray-500 flex items-center gap-2">
-           🚫 Spam Bildir
+           <FaExclamationTriangle className={currentView === 'spam' ? 'text-green-500' : 'text-orange-500'} /> 
+           {currentView === 'spam' ? 'Spamdan Kaldır' : 'Spam Bildir'}
        </button>
 
-       {/* 6. Çöp Kutusu */}
-       <button onClick={(e) => { e.stopPropagation(); onAction('trash', item, type); setActiveMenu(null); }} className="text-left px-4 py-2 hover:bg-gray-100 text-sm text-red-600 flex items-center gap-2">
-           🗑️ Çöp Kutusu
+       <button onClick={(e) => { e.stopPropagation(); onAction(currentView === 'trash' ? 'delete' : 'trash', item, type); setActiveMenu(null); }} className="text-left px-4 py-2 hover:bg-gray-100 text-sm text-red-600 flex items-center gap-2">
+           <FaTrash /> {currentView === 'trash' ? 'Kalıcı Sil' : 'Çöp Kutusu'}
        </button>
     </div>
   );
@@ -135,7 +135,7 @@ const DriveContent = ({
   return (
     <div className="w-full pb-10 min-h-screen" onClick={handleBackgroundClick}>
       
-      {/* HEADER: TOPLU İŞLEM VEYA NAVİGASYON */}
+      {/* HEADER */}
       {selectedItems.length > 0 ? (
           <div className="flex items-center justify-between bg-blue-50 border border-blue-200 rounded-lg p-3 mb-6 shadow-sm sticky top-0 z-30">
              <div className="flex items-center gap-3">
@@ -143,14 +143,14 @@ const DriveContent = ({
                  <span className="font-semibold text-blue-800">{selectedItems.length} öğe seçildi</span>
              </div>
              <div className="flex items-center gap-2">
-                 <button onClick={() => handleBulkAction('star')} className="p-2 hover:bg-blue-100 rounded text-gray-600" title="Yıldızla">⭐</button>
-                 <button onClick={() => handleBulkAction('spam')} className="p-2 hover:bg-gray-200 rounded text-gray-600" title="Spam Bildir">🚫</button> 
-                 <button onClick={() => handleBulkAction('trash')} className="p-2 hover:bg-red-100 rounded text-red-600" title="Çöp Kutusuna At">🗑️</button>
+                 <button onClick={() => handleBulkAction('star')} className="p-2 hover:bg-blue-100 rounded text-yellow-600" title="Yıldızla"><FaStar/></button>
+                 <button onClick={() => handleBulkAction('spam')} className="p-2 hover:bg-gray-200 rounded text-gray-600" title="Spam Bildir"><FaExclamationTriangle/></button> 
+                 <button onClick={() => handleBulkAction(currentView === 'trash' ? 'delete' : 'trash')} className="p-2 hover:bg-red-100 rounded text-red-600" title={currentView === 'trash' ? 'Kalıcı Sil' : 'Çöp Kutusuna At'}><FaTrash/></button>
              </div>
           </div>
       ) : (
           <div className="flex items-center justify-between mb-6">
-             {/* BREADCRUMBS (NAVİGASYON) */}
+             {/* BREADCRUMBS */}
              <div className="flex items-center gap-2 text-sm text-gray-600 bg-gray-50 px-4 py-2 rounded-xl border border-gray-200 overflow-x-auto">
                 {breadcrumbs && breadcrumbs.map((crumb, index) => (
                     <div 
@@ -191,7 +191,6 @@ const DriveContent = ({
       {/* --- GRID GÖRÜNÜMÜ --- */}
       {viewMode === 'grid' && (
           <>
-            {/* Klasörler */}
             <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3 mb-8">
                 {folders && folders.map(folder => folder ? (
                     <div 
@@ -203,20 +202,35 @@ const DriveContent = ({
                         onDragOver={(e) => handleDragOverItem(e, folder.id)}
                         onDragLeave={handleDragLeaveItem}
                         onDrop={(e) => handleDropOnFolder(e, folder.id)}
-                        className={`relative group flex items-center gap-3 p-3 border rounded-xl cursor-pointer select-none transition-all
+                        className={`relative group flex flex-col items-start gap-2 p-3 border rounded-xl cursor-pointer select-none transition-all h-[100px] justify-center
                             ${isSelected(folder.id, 'folders') ? 'bg-blue-100 border-blue-500 ring-2 ring-blue-300' : 'bg-[#F7F9FC] border-gray-200 hover:shadow-sm'}
                             ${dragOverFolderId === folder.id ? 'bg-green-100 border-green-500 scale-105' : ''}
+                            ${folder.is_starred ? 'bg-yellow-50 border-yellow-200' : ''}
                         `}
                     >
-                        <span className="text-xl">📁</span>
-                        <span className="text-sm font-medium text-gray-700 truncate">{folder.name}</span>
-                        <button onClick={(e) => { e.stopPropagation(); setActiveMenu(activeMenu === folder.id ? null : folder.id); }} className="ml-auto p-1 hover:bg-gray-200 rounded-full opacity-0 group-hover:opacity-100 transition">⋮</button>
+                        <div className="flex items-center w-full gap-2">
+                           <FaFolder className={`text-2xl ${folder.is_starred ? 'text-yellow-500' : 'text-blue-500'}`} />
+                           <div className="flex flex-col min-w-0 flex-1">
+                               <div className="flex items-center">
+                                   {folder.is_starred && <FaStar className="text-yellow-400 mr-1 text-xs" />}
+                                   <span className="text-sm font-medium text-gray-700 truncate">{folder.name}</span>
+                               </div>
+                               {currentView === 'shared' && (
+                                    <div className="text-[10px] text-gray-500 flex items-center gap-1">
+                                        <FaUser className="text-[8px]" /> {folder.owner || 'Bilinmiyor'}
+                                    </div>
+                               )}
+                           </div>
+                        </div>
+                        
+                        <button onClick={(e) => { e.stopPropagation(); setActiveMenu(activeMenu === folder.id ? null : folder.id); }} className="absolute top-2 right-2 p-1 hover:bg-gray-200 rounded-full opacity-0 group-hover:opacity-100 transition">
+                            <FaEllipsisV className="text-gray-400" />
+                        </button>
                         {activeMenu === folder.id && <ActionMenu item={folder} type="folders" />}
                     </div>
                 ) : null)}
             </div>
 
-            {/* Dosyalar */}
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
                 {files && files.map(file => file ? (
                     <div 
@@ -227,15 +241,29 @@ const DriveContent = ({
                         onDragStart={(e) => handleDragStart(e, file, 'files')}
                         className={`group relative flex flex-col h-[230px] border rounded-xl cursor-pointer select-none transition-all hover:z-50
                              ${isSelected(file.id, 'files') ? 'border-blue-500 ring-2 ring-blue-300 shadow-lg transform scale-[1.02]' : 'border-gray-200 bg-white hover:shadow-md'}
+                             ${file.is_starred ? 'ring-1 ring-yellow-300 shadow-yellow-100' : ''}
                         `}
                     >
                         <div className="flex-1 bg-[#F0F4F8] flex items-center justify-center overflow-hidden relative rounded-t-xl">
                             {file.thumbnail ? <img src={file.thumbnail} alt={file.name} className="w-full h-full object-cover"/> : <div className={getFileIcon(file.name).color}>{getFileIcon(file.name).icon}</div>}
                         </div>
-                        <div className="h-[60px] flex items-center px-4 bg-white border-t border-gray-100 relative rounded-b-xl">
-                            <span className="text-sm font-medium truncate w-full">{file.name}</span>
+                        
+                        <div className={`flex flex-col justify-center px-4 py-2 border-t border-gray-100 relative rounded-b-xl ${file.is_starred ? 'bg-yellow-50' : 'bg-white'} min-h-[60px]`}>
+                            <div className="flex items-center w-full min-w-0">
+                                {file.is_starred && <FaStar className="text-yellow-400 mr-2 flex-shrink-0" />}
+                                <span className="text-sm font-medium truncate w-full" title={file.name}>{file.name}</span>
+                            </div>
+                            
+                            {currentView === 'shared' && (
+                                <div className="text-xs text-gray-400 flex items-center gap-1 mt-1">
+                                    <FaUser className="text-[10px]" /> {file.owner ? `${file.owner} tarafından` : 'Bilinmiyor'}
+                                </div>
+                            )}
                         </div>
-                        <button onClick={(e) => { e.stopPropagation(); setActiveMenu(activeMenu === file.id ? null : file.id); }} className="absolute top-2 right-2 p-1 bg-white rounded-full shadow-sm opacity-0 group-hover:opacity-100 transition z-20">⋮</button>
+
+                        <button onClick={(e) => { e.stopPropagation(); setActiveMenu(activeMenu === file.id ? null : file.id); }} className="absolute top-2 right-2 p-1 bg-white rounded-full shadow-sm opacity-0 group-hover:opacity-100 transition z-20">
+                            <FaEllipsisV className="text-gray-500" />
+                        </button>
                         {activeMenu === file.id && <ActionMenu item={file} type="files" />}
                     </div>
                  ) : null)}
@@ -243,13 +271,13 @@ const DriveContent = ({
           </>
       )}
 
-      {/* --- LIST GÖRÜNÜMÜ --- */}
+      {/* --- LIST (LİSTE) GÖRÜNÜMÜ --- */}
       {viewMode === 'list' && (
-        <div className="bg-white border rounded-xl overflow-hidden shadow-sm pb-20">
+        <div className="bg-white border rounded-xl shadow-sm pb-20 overflow-visible">
             <table className="w-full text-left border-collapse">
                 <thead>
                     <tr className="bg-gray-50 text-gray-500 text-xs border-b">
-                        <th className="px-4 py-3">Ad</th>
+                        <th className="px-4 py-3">Dosya</th>
                         <th className="px-4 py-3">Boyut</th>
                         <th className="px-4 py-3">Tarih</th>
                         <th className="px-4 py-3 w-10"></th>
@@ -262,27 +290,33 @@ const DriveContent = ({
                             key={folder.id} 
                             onClick={(e) => handleSelection(e, folder.id, 'folders')} 
                             onDoubleClick={() => onFolderClick(folder)}
-                            className={`group border-b cursor-pointer transition-colors relative ${isSelected(folder.id, 'folders') ? 'bg-blue-100' : 'hover:bg-gray-50'}`}
+                            className={`group border-b cursor-pointer transition-colors relative 
+                                ${isSelected(folder.id, 'folders') ? 'bg-blue-100' : 'hover:bg-gray-50'}
+                                ${folder.is_starred ? 'bg-yellow-50 hover:bg-yellow-100' : ''}
+                            `}
                         >
-                            <td className="px-4 py-3 flex items-center gap-2 font-medium text-gray-700">
-                                <span className="text-lg">📁</span> {folder.name}
+                            <td className="px-4 py-3">
+                                <div className="flex items-center gap-3">
+                                    <FaFolder className="text-2xl text-blue-500" />
+                                    <div className="flex flex-col">
+                                        <div className="flex items-center">
+                                            {folder.is_starred && <FaStar className="text-yellow-400 text-xs mr-1" />}
+                                            <span className="font-medium text-gray-700">{folder.name}</span>
+                                        </div>
+                                        {currentView === 'shared' && (
+                                            <span className="text-xs text-gray-400 flex items-center gap-1 mt-0.5">
+                                                <FaUser className="text-[10px]" /> {folder.owner ? `${folder.owner} tarafından` : 'Paylaşan bilinmiyor'}
+                                            </span>
+                                        )}
+                                    </div>
+                                </div>
                             </td>
                             <td className="px-4 py-3 text-sm text-gray-500">{formatBytes(folder.size)}</td>
                             <td className="px-4 py-3 text-sm text-gray-500">{formatDate(folder.created_at)}</td>
                             
-                            {/* 3 NOKTA MENÜSÜ */}
                             <td className="px-4 py-3 text-right relative">
-                                <button 
-                                    onClick={(e) => { e.stopPropagation(); setActiveMenu(activeMenu === folder.id ? null : folder.id); }} 
-                                    className="p-2 hover:bg-gray-200 rounded-full text-gray-500 opacity-0 group-hover:opacity-100 transition-opacity"
-                                >
-                                    ⋮
-                                </button>
-                                {activeMenu === folder.id && (
-                                    <div className="absolute right-10 top-2 z-50">
-                                        <ActionMenu item={folder} type="folders" />
-                                    </div>
-                                )}
+                                <button onClick={(e) => { e.stopPropagation(); setActiveMenu(activeMenu === folder.id ? null : folder.id); }} className="p-2 hover:bg-gray-200 rounded-full text-gray-500 opacity-0 group-hover:opacity-100 transition-opacity"><FaEllipsisV/></button>
+                                {activeMenu === folder.id && (<div className="absolute right-10 top-2 z-[9999]"><ActionMenu item={folder} type="folders" /></div>)}
                             </td>
                         </tr>
                     ) : null)}
@@ -293,28 +327,33 @@ const DriveContent = ({
                             key={file.id} 
                             onClick={(e) => handleSelection(e, file.id, 'files')} 
                             onDoubleClick={() => onFileDoubleClick(file)} 
-                            className={`group border-b cursor-pointer transition-colors relative ${isSelected(file.id, 'files') ? 'bg-blue-100' : 'hover:bg-gray-50'}`}
+                            className={`group border-b cursor-pointer transition-colors relative 
+                                ${isSelected(file.id, 'files') ? 'bg-blue-100' : 'hover:bg-gray-50'}
+                                ${file.is_starred ? 'bg-yellow-50 hover:bg-yellow-100' : ''}
+                            `}
                         >
-                            <td className="px-4 py-3 flex items-center gap-2 text-gray-700">
-                                <div className="w-6 h-6 flex items-center justify-center">{getFileIcon(file.name).icon}</div>
-                                <span className="truncate max-w-[200px]">{file.name}</span>
+                            <td className="px-4 py-3">
+                                <div className="flex items-center gap-3">
+                                    <div className="w-8 h-8 flex items-center justify-center">{getFileIcon(file.name).icon}</div>
+                                    <div className="flex flex-col">
+                                        <div className="flex items-center">
+                                            {file.is_starred && <FaStar className="text-yellow-400 text-xs mr-1" />}
+                                            <span className="font-medium text-gray-700" title={file.name}>{file.name}</span>
+                                        </div>
+                                        {currentView === 'shared' && (
+                                            <span className="text-xs text-gray-400 flex items-center gap-1 mt-0.5">
+                                                <FaUser className="text-[10px]" /> {file.owner ? `${file.owner} tarafından` : 'Paylaşan bilinmiyor'}
+                                            </span>
+                                        )}
+                                    </div>
+                                </div>
                             </td>
                             <td className="px-4 py-3 text-sm text-gray-500">{formatBytes(file.size)}</td>
                             <td className="px-4 py-3 text-sm text-gray-500">{formatDate(file.updated_at)}</td>
                             
-                            {/* 3 NOKTA MENÜSÜ */}
                             <td className="px-4 py-3 text-right relative">
-                                <button 
-                                    onClick={(e) => { e.stopPropagation(); setActiveMenu(activeMenu === file.id ? null : file.id); }} 
-                                    className="p-2 hover:bg-gray-200 rounded-full text-gray-500 opacity-0 group-hover:opacity-100 transition-opacity"
-                                >
-                                    ⋮
-                                </button>
-                                {activeMenu === file.id && (
-                                    <div className="absolute right-10 top-2 z-50">
-                                        <ActionMenu item={file} type="files" />
-                                    </div>
-                                )}
+                                <button onClick={(e) => { e.stopPropagation(); setActiveMenu(activeMenu === file.id ? null : file.id); }} className="p-2 hover:bg-gray-200 rounded-full text-gray-500 opacity-0 group-hover:opacity-100 transition-opacity"><FaEllipsisV/></button>
+                                {activeMenu === file.id && (<div className="absolute right-10 top-2 z-[9999]"><ActionMenu item={file} type="files" /></div>)}
                             </td>
                         </tr>
                     ) : null)}

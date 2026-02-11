@@ -1,0 +1,20 @@
+# Temel Django Paketleri
+Django==5.0.1
+djangorestframework==3.14.0
+django-cors-headers==4.3.1
+
+# Veritabanı (PostgreSQL için)
+psycopg2-binary==2.9.9
+
+# Dosya Depolama (MinIO/S3 için)
+django-storages==1.14.2
+boto3==1.34.14
+
+# Kimlik Doğrulama (JWT Token)
+djangorestframework-simplejwt==5.3.1
+
+# Resim İşleme (Thumbnail için)
+Pillow==10.2.0
+
+# Ortam Değişkenleri (.env okumak için)
+python-dotenv==1.0.0

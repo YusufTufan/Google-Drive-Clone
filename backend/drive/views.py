@@ -56,24 +56,12 @@ class FolderViewSet(viewsets.ModelViewSet):
         user = self.request.user
         if not user.is_authenticated:
             return Folder.objects.none()
-        # 1. Belirli bir klasörün içindeki klasörler isteniyorsa
-        parent_id = self.request.query_params.get("parent")
-        if parent_id:
-            return Folder.objects.filter(
-                parent_id=parent_id, is_trashed=False
-            ).order_by(Lower("name"))
 
-        filter_type = self.request.query_params.get("filter")
+        all_accessible = Folder.objects.filter(
+            Q(user=user) | Q(shared_with=user)
+        ).distinct()
 
-        # 2. "Benimle Paylaşılanlar" Modu
-        if filter_type == "shared":
-            return Folder.objects.filter(shared_with=user, is_trashed=False).order_by(
-                Lower("name")
-            )
-
-        # 3. Varsayılan: Sadece benim klasörlerim
-        queryset = Folder.objects.filter(user=user).order_by(Lower("name"))
-
+        # 1. Aksiyonlar
         if self.action in [
             "retrieve",
             "update",
@@ -85,16 +73,34 @@ class FolderViewSet(viewsets.ModelViewSet):
             "move",
             "share",
         ]:
-            return queryset
+            return all_accessible
+
+        # 2. Belirli bir klasörün içindeki klasörler isteniyorsa
+        parent_id = self.request.query_params.get("parent")
+        if parent_id:
+            return all_accessible.filter(
+                parent_id=parent_id, is_trashed=False
+            ).order_by(Lower("name"))
+
+        filter_type = self.request.query_params.get("filter")
+
+        # 3. "Benimle Paylaşılanlar" Modu
+        if filter_type == "shared":
+            return all_accessible.filter(shared_with=user, is_trashed=False).order_by(
+                Lower("name")
+            )
+
+        # 4. Varsayılan (My Drive) - Sadece benimkiler
+        my_folders = Folder.objects.filter(user=user).order_by(Lower("name"))
 
         search_query = self.request.query_params.get("search")
         if search_query:
-            return queryset.filter(name__icontains=search_query, is_trashed=False)
+            return all_accessible.filter(name__icontains=search_query, is_trashed=False)
 
         if filter_type:
-            return apply_filters(queryset, self.request)
+            return apply_filters(all_accessible, self.request)
 
-        return queryset.filter(is_trashed=False, is_spam=False, parent__isnull=True)
+        return my_folders.filter(is_trashed=False, is_spam=False, parent__isnull=True)
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
@@ -114,17 +120,27 @@ class FolderViewSet(viewsets.ModelViewSet):
                 raise ValidationError({"message": "Bu isimde klasör var."})
         serializer.save()
 
-    # --- AKSİYONLAR ---
+    def perform_destroy(self, instance):
+        user = self.request.user
+
+        # Eğer klasörün SAHİBİ benimsem:
+        if instance.user == user:
+            # Komple sil (İçindekilerle birlikte gider)
+            instance.delete()
+
+        # Eğer klasör bana PAYLAŞILMIŞSA:
+        else:
+            # Klasörü silme, sadece beni "paylaşılanlar" listesinden çıkar
+            instance.shared_with.remove(user)
+
     @action(detail=True, methods=["post"])
     def share(self, request, pk=None):
         folder = self.get_object()
         username = request.data.get("username")
-
         try:
             user_to_share = User.objects.get(username=username)
             if user_to_share == request.user:
                 return Response({"error": "Kendinizle paylaşamazsınız"}, status=400)
-
             folder.shared_with.add(user_to_share)
             return Response(
                 {"status": "shared", "message": f"{username} ile paylaşıldı"}
@@ -142,7 +158,6 @@ class FolderViewSet(viewsets.ModelViewSet):
         obj.save()
         return Response({"status": "moved"})
 
-    # (Diğer toggle aksiyonları: star, trash, spam...)
     @action(detail=True, methods=["post"])
     def toggle_star(self, request, pk=None):
         obj = self.get_object()
@@ -179,28 +194,19 @@ class FileViewSet(viewsets.ModelViewSet):
         if not user.is_authenticated:
             return File.objects.none()
 
+        # Hem benim dosyalarım hem de bana paylaşılanlar
+        all_accessible = File.objects.filter(
+            Q(user=user) | Q(shared_with=user)
+        ).distinct()
+
         # 1. Eğer bir klasörün içindeki dosyalar isteniyorsa
         folder_id = self.request.query_params.get("folder")
         if folder_id:
-            return File.objects.filter(folder_id=folder_id, is_trashed=False).order_by(
-                Lower("name")
-            )
+            return all_accessible.filter(
+                folder_id=folder_id, is_trashed=False
+            ).order_by(Lower("name"))
 
-        # Link alma vs. işlemleri için kapsama alanı
-        if self.action in ["get_link", "retrieve"]:
-            return File.objects.filter(Q(user=user) | Q(shared_with=user)).distinct()
-
-        filter_type = self.request.query_params.get("filter")
-
-        # 2. Paylaşılanlar
-        if filter_type == "shared":
-            return File.objects.filter(shared_with=user, is_trashed=False).order_by(
-                Lower("name")
-            )
-
-        # 3. Varsayılan: Benim dosyalarım
-        queryset = File.objects.filter(user=user).order_by(Lower("name"))
-
+        # 2. Aksiyonlar
         if self.action in [
             "retrieve",
             "update",
@@ -211,17 +217,29 @@ class FileViewSet(viewsets.ModelViewSet):
             "toggle_spam",
             "move",
             "share",
+            "get_link",
         ]:
-            return queryset
+            return all_accessible
+
+        filter_type = self.request.query_params.get("filter")
+
+        # 3. Paylaşılanlar
+        if filter_type == "shared":
+            return all_accessible.filter(shared_with=user, is_trashed=False).order_by(
+                Lower("name")
+            )
+
+        # 4. Varsayılan: Benim dosyalarım
+        my_files = File.objects.filter(user=user).order_by(Lower("name"))
 
         search_query = self.request.query_params.get("search")
         if search_query:
-            return queryset.filter(name__icontains=search_query, is_trashed=False)
+            return all_accessible.filter(name__icontains=search_query, is_trashed=False)
 
         if filter_type:
-            return apply_filters(queryset, self.request)
+            return apply_filters(all_accessible, self.request)
 
-        return queryset.filter(is_trashed=False, is_spam=False, folder__isnull=True)
+        return my_files.filter(is_trashed=False, is_spam=False, folder__isnull=True)
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user, size=self.request.data.get("file").size)
@@ -240,6 +258,22 @@ class FileViewSet(viewsets.ModelViewSet):
             if exists:
                 raise ValidationError({"message": "Bu isimde dosya var."})
         serializer.save()
+
+    def perform_destroy(self, instance):
+        user = self.request.user
+
+        # Eğer dosyanın SAHİBİ benimsem:
+        if instance.user == user:
+            # 1. MinIO'dan fiziksel sil
+            if instance.file:
+                instance.file.delete(save=False)
+            # 2. Veritabanından sil
+            instance.delete()
+
+        # Eğer dosya bana PAYLAŞILMIŞSA:
+        else:
+            # Dosyayı silme, sadece beni "paylaşılanlar" listesinden çıkar
+            instance.shared_with.remove(user)
 
     # --- AKSİYONLAR ---
     @action(detail=True, methods=["post"])
@@ -294,8 +328,6 @@ class FileViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=["get"])
     def get_link(self, request, pk=None):
         file_obj = self.get_object()
-
-        # Dosyanın geçici (imzalı) indirme linkini alıyoruz
         try:
             download_url = file_obj.file.url
             return Response({"url": download_url})
@@ -308,10 +340,8 @@ class StorageUsageView(APIView):
         user = request.user
         if not user.is_authenticated:
             return Response({"total": 0, "used": 0})
-
         total_used = (
             File.objects.filter(user=user).aggregate(Sum("size"))["size__sum"] or 0
         )
         limit = 15 * 1024 * 1024 * 1024
-
         return Response({"total": limit, "used": total_used})

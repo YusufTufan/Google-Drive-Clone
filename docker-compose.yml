@@ -1,0 +1,84 @@
+version: '3.8'
+
+services:
+  # 1. VERİTABANI (PostgreSQL)
+  db:
+    image: postgres:15-alpine
+    container_name: nexus_db
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=nexus_drive
+      - POSTGRES_USER=nexus_user
+      - POSTGRES_PASSWORD=nexus_pass
+    ports:
+      - "5432:5432"
+    networks:
+      - nexus_network
+
+  # 2. DEPOLAMA (MinIO - S3)
+  minio:
+    image: minio/minio
+    container_name: nexus_minio
+    command: server /data --console-address ":9001"
+    ports:
+      - "9000:9000" # API Portu
+      - "9001:9001" # Yönetim Paneli
+    environment:
+      - MINIO_ROOT_USER=minioadmin
+      - MINIO_ROOT_PASSWORD=minioadmin
+    volumes:
+      - minio_data:/data
+    networks:
+      - nexus_network
+
+  # 3. BACKEND (Django)
+  backend:
+    build: ./backend  # 👈 Bak burada 'backend' klasörüne git diyoruz
+    container_name: nexus_backend
+    command: >
+      sh -c "python manage.py migrate &&
+             python manage.py runserver 0.0.0.0:8000"
+    volumes:
+      - ./backend:/app # Hot Reload için
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+      - minio
+    environment:
+      - DB_HOST=db
+      - DB_NAME=nexus_drive
+      - DB_USER=nexus_user
+      - DB_PASSWORD=nexus_pass
+      - MINIO_ENDPOINT=minio:9000
+      - MINIO_ACCESS_KEY=minioadmin
+      - MINIO_SECRET_KEY=minioadmin
+      - MINIO_USE_SSL=False
+    networks:
+      - nexus_network
+
+  # 4. FRONTEND (React)
+  frontend:
+    build: ./frontend # 👈 Bak burada 'frontend' klasörüne git diyoruz
+    container_name: nexus_frontend
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    ports:
+      - "3000:3000"
+    stdin_open: true
+    depends_on:
+      - backend
+    networks:
+      - nexus_network
+
+# Verilerin kaybolmaması için Docker Volume'leri
+volumes:
+  postgres_data:
+  minio_data:
+
+# Konteynerlerin birbiriyle konuşması için özel ağ
+networks:
+  nexus_network:
+    driver: bridge
