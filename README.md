@@ -61,7 +61,7 @@ docker-compose up -d --build
 
 ## 🗺️ Geliştirme Yol Haritası (Development Roadmap)
 
-Proje, modern bulut mimarisi standartlarına uygun olarak 3 ana fazda planlanmıştır. Şu an **Faz 1** tamamlanmış olup, **Faz 2** çalışmaları başlamıştır.
+Proje, modern bulut mimarisi standartlarına uygun olarak 3 ana fazda planlanmıştır. Şu an **Faz 1** ve **Faz 2**  tamamlanmış olup, **Faz 3** çalışmaları başlamıştır.
 
 ### ✅ Faz 1: Core Features & MVP (Tamamlandı)
 *Kullanıcı odaklı temel özelliklerin ve uygulama mimarisinin oluşturulması.*
@@ -71,13 +71,13 @@ Proje, modern bulut mimarisi standartlarına uygun olarak 3 ana fazda planlanmı
 - [x] **UI/UX Optimizasyonu:** Dinamik breadcrumb navigasyonu, liste/ızgara görünümleri ve toast bildirimleri.
 - [x] **Güvenlik:** JWT tabanlı kimlik doğrulama ve izole kullanıcı alanları.
 
-### 🐳 Faz 2: DevOps & Containerization (Sürece Alındı)
+### 🐳 Faz 2: DevOps & Containerization (Tamamlandı)
 *Uygulamanın taşınabilirliğini ve üretim ortamına (Production) uygunluğunu artırma.*
 - [x] **Dockerization:** Backend, Frontend ve MinIO servislerinin Docker imajlarının oluşturulması.
 - [x] **Orchestration:** `docker-compose` ile tüm servislerin (App, DB, Storage) tek komutla ayağa kaldırılması.
 - [x] **Veritabanı Migrasyonu:** Geliştirme veritabanından (SQLite) üretim veritabanına (**PostgreSQL**) geçiş.
 
-### ☸️ Faz 3: High Availability & Observability (Gelecek Hedefleri)
+### ☸️ Faz 3: High Availability & Observability (Üzerinde çalışılıyor.)
 *Sistemin ölçeklenebilirliği ve izlenebilirliğinin sağlanması.*
 - [ ] **Kubernetes (K8s) Deployment:** Uygulamanın Cluster yapısına taşınması (Deployment, Service, PVC yapılandırmaları).
 - [ ] **Observability Stack:** **Prometheus** ile sistem metriklerinin toplanması ve **Grafana** ile görselleştirilmesi.
