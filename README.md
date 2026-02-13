@@ -81,7 +81,7 @@ Proje, modern bulut mimarisi standartlarına uygun olarak 3 ana fazda planlanmı
 *Sistemin ölçeklenebilirliği ve izlenebilirliğinin sağlanması.*
 - [ ] **Kubernetes (K8s) Deployment:** Uygulamanın Cluster yapısına taşınması (Deployment, Service, PVC yapılandırmaları).
 - [ ] **Observability Stack:** **Prometheus** ile sistem metriklerinin toplanması ve **Grafana** ile görselleştirilmesi.
-- [ ] **Log Yönetimi:** Merkezi loglama altyapısının kurulması.
+- [ ] **Gelişmiş arama motoru entegrasyonu**.
 
 📄 Lisans
 Bu proje MIT lisansı ile lisanslanmıştır.
