@@ -41,51 +41,27 @@ Bu proje; dosya versiyonlama, çoklu yükleme, sürükle-bırak desteği ve deta
 
 ## 🚀 Kurulum (Local Development)
 
-Projeyi kendi bilgisayarınızda çalıştırmak için aşağıdaki adımları izleyin.
+Sistemi tek komutla ayağa kaldırmak için Docker kullanabilirsiniz.
 
-### 1. Ön Hazırlıklar
-* Python 3.x ve Node.js yüklü olmalıdır.
-* MinIO Server yerel makinenizde çalışıyor olmalıdır.
-
-### 2. Ortam Değişkenleri (.env)
-Backend klasörü içinde `.env` dosyası oluşturun ve aşağıdaki ayarları kendinize göre düzenleyin:
-
+### Repoyu Klonlayın:
 ```bash
-# backend/.env
-DEBUG=True
-SECRET_KEY=gizli-anahtariniz-buraya
-ALLOWED_HOSTS=localhost,127.0.0.1
-
-# MinIO Ayarları
-MINIO_ENDPOINT=127.0.0.1:9000
-MINIO_ACCESS_KEY=minioadmin
-MINIO_SECRET_KEY=minioadmin
-MINIO_BUCKET_NAME=nexus-drive-bucket
-MINIO_USE_SSL=False
+git clone https://github.com/YusufTufan/Google-Drive-Clone.git
+cd Google-Drive-Clone
 ```
 
-
-### 3. Backend Kurulumu
+### Sistemi Başlatın:
 ```bash
-cd backend
-python -m venv venv
-# Windows için: venv\Scripts\activate
-# Mac/Linux için: source venv/bin/activate
+docker-compose up -d --build
+```
+### Erişim Noktaları:
 
-pip install -r requirements.txt
-python manage.py migrate
-python manage.py runserver
-```
-### 4. Frontend Kurulumu
-```bash
-cd frontend
-npm install
-npm start
-```
+## Uygulama: http://localhost:3000
+## Backend API: http://localhost:8000
+## MinIO Console: http://localhost:9001 (Kullanıcı: minioadmin | Şifre: minioadmin)
 
 ## 🗺️ Geliştirme Yol Haritası (Development Roadmap)
 
-Proje, modern bulut mimarisi standartlarına uygun olarak 3 ana fazda planlanmıştır. Şu an **Faz 1** tamamlanmış olup, **Faz 2** çalışmaları başlamıştır.
+Proje, modern bulut mimarisi standartlarına uygun olarak 3 ana fazda planlanmıştır. Şu an **Faz 1** ve **Faz 2**  tamamlanmış olup, **Faz 3** çalışmaları başlamıştır.
 
 ### ✅ Faz 1: Core Features & MVP (Tamamlandı)
 *Kullanıcı odaklı temel özelliklerin ve uygulama mimarisinin oluşturulması.*
@@ -95,20 +71,19 @@ Proje, modern bulut mimarisi standartlarına uygun olarak 3 ana fazda planlanmı
 - [x] **UI/UX Optimizasyonu:** Dinamik breadcrumb navigasyonu, liste/ızgara görünümleri ve toast bildirimleri.
 - [x] **Güvenlik:** JWT tabanlı kimlik doğrulama ve izole kullanıcı alanları.
 
-### 🐳 Faz 2: DevOps & Containerization (Sürece Alındı)
+### 🐳 Faz 2: DevOps & Containerization (Tamamlandı)
 *Uygulamanın taşınabilirliğini ve üretim ortamına (Production) uygunluğunu artırma.*
-- [ ] **Dockerization:** Backend, Frontend ve MinIO servislerinin Docker imajlarının oluşturulması.
-- [ ] **Orchestration:** `docker-compose` ile tüm servislerin (App, DB, Storage) tek komutla ayağa kaldırılması.
-- [ ] **Veritabanı Migrasyonu:** Geliştirme veritabanından (SQLite) üretim veritabanına (**PostgreSQL**) geçiş.
+- [x] **Dockerization:** Backend, Frontend ve MinIO servislerinin Docker imajlarının oluşturulması.
+- [x] **Orchestration:** `docker-compose` ile tüm servislerin (App, DB, Storage) tek komutla ayağa kaldırılması.
+- [x] **Veritabanı Migrasyonu:** Geliştirme veritabanından (SQLite) üretim veritabanına (**PostgreSQL**) geçiş.
 
-### ☸️ Faz 3: High Availability & Observability (Gelecek Hedefleri)
+### ☸️ Faz 3: High Availability & Observability (Üzerinde çalışılıyor.)
 *Sistemin ölçeklenebilirliği ve izlenebilirliğinin sağlanması.*
 - [ ] **Kubernetes (K8s) Deployment:** Uygulamanın Cluster yapısına taşınması (Deployment, Service, PVC yapılandırmaları).
 - [ ] **Observability Stack:** **Prometheus** ile sistem metriklerinin toplanması ve **Grafana** ile görselleştirilmesi.
-- [ ] **Log Yönetimi:** Merkezi loglama altyapısının kurulması.
+- [ ] **Gelişmiş arama motoru entegrasyonu**.
 
 📄 Lisans
 Bu proje MIT lisansı ile lisanslanmıştır.
 
-👨‍💻 Geliştirici
-[Yusuf TUFAN]
+👨‍💻 Geliştirici: [Yusuf TUFAN]
