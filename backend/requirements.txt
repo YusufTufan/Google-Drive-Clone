@@ -18,3 +18,7 @@ Pillow==10.2.0
 
 # Ortam Değişkenleri (.env okumak için)
 python-dotenv==1.0.0
+
+meilisearch==0.28.3
+
+django-prometheus==2.3.1

@@ -9,7 +9,8 @@ from .serializers import FileSerializer, FolderSerializer
 from django.contrib.auth.models import User
 from django.db.models.functions import Lower
 
-from django.db.models import Sum
+import meilisearch
+from django.db.models import Sum, When, Case
 from rest_framework.views import APIView
 from django.db.models import Q
 
@@ -46,6 +47,61 @@ def apply_filters(queryset, request):
         ]
 
     return queryset.order_by(Lower("name"))
+
+
+client = meilisearch.Client("http://meilisearch:7700", "nexus_master_key")
+
+
+def apply_advanced_search(queryset, request):
+    search_query = request.query_params.get("search")
+    file_type = request.query_params.get("type")  # 'pdf', 'jpg' vb.
+
+    # Arama yoksa normal queryset döndür
+    if not search_query and not file_type:
+        return queryset
+
+    # 1. MeiliSearch Filtrelerini Hazırla
+    # Kullanıcı SADECE kendi dosyalarını görmeli
+    user_id = request.user.id
+
+    # Filtre kuralları: Kendi dosyası OLACAK + Çöp OLMAYACAK + Spam OLMAYACAK
+    search_params = {
+        "filter": [f"user_id = {user_id}", "is_trashed = false", "is_spam = false"],
+        "limit": 100,  # Maksimum sonuç sayısı
+    }
+
+    if file_type:
+        # Tür filtresi varsa ekle
+        search_params["filter"].append(f"type = {file_type}")
+
+    try:
+        # 2. MeiliSearch'te Ara
+        index = client.index("files")
+        # Arama metni boşsa bile filtreler çalışsın diye "" gönderiyoruz
+        result = index.search(search_query if search_query else "", search_params)
+
+        # 3. Sonuçları Django Queryset'e Çevir
+        hits = result.get("hits", [])
+        file_ids = [hit["id"] for hit in hits]
+
+        if not file_ids:
+            return queryset.none()
+
+        # Sıralamayı Koru (MeiliSearch en alakalıyı en başa koyar, SQL bozmasın)
+        preserved_order = Case(
+            *[When(pk=pk, then=pos) for pos, pk in enumerate(file_ids)]
+        )
+
+        return queryset.filter(pk__in=file_ids).order_by(preserved_order)
+
+    except Exception as e:
+        print(f"MeiliSearch Hatası (Fallback çalışıyor): {e}")
+        # Eğer MeiliSearch çökmüşse, eski usul DB araması yap (Yedek Plan)
+        if search_query:
+            queryset = queryset.filter(name__icontains=search_query)
+        if file_type:
+            queryset = queryset.filter(name__iendswith=file_type)
+        return queryset
 
 
 class FolderViewSet(viewsets.ModelViewSet):
@@ -95,7 +151,7 @@ class FolderViewSet(viewsets.ModelViewSet):
 
         search_query = self.request.query_params.get("search")
         if search_query:
-            return all_accessible.filter(name__icontains=search_query, is_trashed=False)
+            return apply_advanced_search(all_accessible, self.request)
 
         if filter_type:
             return apply_filters(all_accessible, self.request)
@@ -221,20 +277,21 @@ class FileViewSet(viewsets.ModelViewSet):
         ]:
             return all_accessible
 
-        filter_type = self.request.query_params.get("filter")
+        # Benim dosyalarım
+        my_files = File.objects.filter(user=user).order_by(Lower("name"))
+        # Gelişmiş arama
+        search_query = self.request.query_params.get("search")
+        file_type = self.request.query_params.get("type")
 
-        # 3. Paylaşılanlar
+        if search_query or file_type:
+            return apply_advanced_search(all_accessible, self.request)
+
+        filter_type = self.request.query_params.get("filter")
+        # 3. Filtreler (Shared, Recent vb.)
         if filter_type == "shared":
             return all_accessible.filter(shared_with=user, is_trashed=False).order_by(
                 Lower("name")
             )
-
-        # 4. Varsayılan: Benim dosyalarım
-        my_files = File.objects.filter(user=user).order_by(Lower("name"))
-
-        search_query = self.request.query_params.get("search")
-        if search_query:
-            return all_accessible.filter(name__icontains=search_query, is_trashed=False)
 
         if filter_type:
             return apply_filters(all_accessible, self.request)

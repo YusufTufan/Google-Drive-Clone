@@ -24,4 +24,5 @@ urlpatterns = [
         ChangePasswordView.as_view(),
         name="auth_change_password",
     ),
+    path("prometheus/", include("django_prometheus.urls")),
 ]

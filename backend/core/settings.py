@@ -27,7 +27,7 @@ SECRET_KEY = "django-insecure-n+ybu(fh(nb@u8$8(33$5eb6dbz!!c7+cq##_u3(h3lm5d#8sg
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"]
 
 
 # Application definition
@@ -46,9 +46,11 @@ INSTALLED_APPS = [
     "drive",  # Drive uygulaması
     "users",  # Users uygulaması
     "rest_framework_simplejwt",  # JWT authentication için
+    "django_prometheus",  # Prometheus monitoring için
 ]
 
 MIDDLEWARE = [
+    "django_prometheus.middleware.PrometheusBeforeMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "corsheaders.middleware.CorsMiddleware",
@@ -57,6 +59,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "django_prometheus.middleware.PrometheusAfterMiddleware",
 ]
 
 ROOT_URLCONF = "core.urls"
