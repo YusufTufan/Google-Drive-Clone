@@ -19,7 +19,6 @@ function App() {
         {/* Herkese Açık Sayfalar */}
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
-
         {/* Sadece Giriş Yapanların Göreceği Ana Sayfa */}
         <Route 
           path="/" 

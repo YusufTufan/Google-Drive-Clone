@@ -17,11 +17,10 @@ const HomePage = () => {
   
   const [currentView, setCurrentView] = useState('drive'); 
   const [currentFolder, setCurrentFolder] = useState(null); 
-  // Breadcrumbs (Ekmek Kırıntısı) State'i
+
   const [breadcrumbs, setBreadcrumbs] = useState([{ id: null, name: "Drive'ım" }]);
   const [searchQuery, setSearchQuery] = useState('');
 
-  // UI STATE'LERİ
   const [isFolderModalOpen, setIsFolderModalOpen] = useState(false);
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   const [isRenameOpen, setIsRenameOpen] = useState(false);
@@ -75,7 +74,6 @@ const HomePage = () => {
     }
   };
 
-  // 👇 Navigasyon Fonksiyonları (Breadcrumb)
   const handleFolderClick = (folder) => {
     if (!folder) return;
     if ((currentView === 'drive' || currentView === 'shared') && !searchQuery) {

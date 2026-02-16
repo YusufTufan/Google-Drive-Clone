@@ -1,7 +1,7 @@
 version: '3.8'
 
 services:
-  # 1. VERİTABANI (PostgreSQL)
+  # 1. VERİTABANI
   db:
     image: postgres:15-alpine
     container_name: nexus_db
@@ -32,7 +32,7 @@ services:
     networks:
       - nexus_network
 
-  # 3. BACKEND (Django)
+  # 3. BACKEND
   backend:
     build: ./backend  
     container_name: nexus_backend
@@ -40,7 +40,7 @@ services:
       sh -c "python manage.py migrate &&
              python manage.py runserver 0.0.0.0:8000"
     volumes:
-      - ./backend:/app # Hot Reload için
+      - ./backend:/app
     ports:
       - "8000:8000"
     depends_on:
@@ -59,7 +59,7 @@ services:
     networks:
       - nexus_network
 
-  # 4. FRONTEND (React)
+  # 4. FRONTEND
   frontend:
     build: ./frontend 
     container_name: nexus_frontend
@@ -92,7 +92,7 @@ services:
     ports:
       - "3001:3000"
     environment:
-      - GF_SECURITY_ADMIN_PASSWORD=admin # Giriş şifresi
+      - GF_SECURITY_ADMIN_PASSWORD=admin
     depends_on:
       - prometheus
     networks:

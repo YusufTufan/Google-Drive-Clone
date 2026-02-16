@@ -176,15 +176,14 @@ REST_FRAMEWORK = {
     )
 }
 
-# React varsayılan olarak 3000 portunda çalışır
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
     "http://127.0.0.1:3000",
 ]
 
 SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(days=1),  # Kanka burayı 1 gün yaptım rahat et
-    "REFRESH_TOKEN_LIFETIME": timedelta(days=7),  # Bu da 7 gün kalsın
+    "ACCESS_TOKEN_LIFETIME": timedelta(days=1),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=7),
     "ROTATE_REFRESH_TOKENS": False,
     "BLACKLIST_AFTER_ROTATION": True,
     "ALGORITHM": "HS256",

@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nexus-config
+data:
+  DB_HOST: "db"
+  DB_PORT: "5432"
+  MINIO_ENDPOINT: "http://minio:9000"
+  MEILI_HTTP_ADDR: "http://meilisearch:7700"
+  DEBUG: "1"

@@ -1,0 +1,64 @@
+# 1. Arama İndeksleri İçin Alan
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: meili-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+---
+# 2. MeiliSearch Uygulaması
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nexus-meilisearch
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: meilisearch
+  template:
+    metadata:
+      labels:
+        app: meilisearch
+    spec:
+      containers:
+      - name: meilisearch
+        image: getmeili/meilisearch:latest
+        ports:
+        - containerPort: 7700
+        env:
+        - name: MEILI_MASTER_KEY
+          value: "nexus_master_key"
+        - name: MEILI_NO_ANALYTICS
+          value: "true"
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        volumeMounts:
+        - name: meili-storage
+          mountPath: /meili_data
+      volumes:
+      - name: meili-storage
+        persistentVolumeClaim:
+          claimName: meili-pvc
+---
+# 3. MeiliSearch Servisi
+apiVersion: v1
+kind: Service
+metadata:
+  name: meilisearch
+spec:
+  selector:
+    app: meilisearch
+  ports:
+    - protocol: TCP
+      port: 7700
+      targetPort: 7700

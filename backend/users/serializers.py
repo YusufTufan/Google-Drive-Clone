@@ -2,7 +2,6 @@ from rest_framework import serializers
 from django.contrib.auth.models import User
 
 
-# Kayıt Olma
 class RegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
 
@@ -19,14 +18,12 @@ class RegisterSerializer(serializers.ModelSerializer):
         return user
 
 
-# Kullanıcı Profil Bilgisi
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ("id", "username", "email", "first_name", "last_name")
 
 
-# Şifre Değiştirme
 class ChangePasswordSerializer(serializers.Serializer):
     old_password = serializers.CharField(required=True)
     new_password = serializers.CharField(required=True)

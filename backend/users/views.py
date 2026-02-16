@@ -8,7 +8,7 @@ from rest_framework.views import APIView
 
 class RegisterView(generics.CreateAPIView):
     queryset = User.objects.all()
-    permission_classes = (AllowAny,)  # Herkes kayıt olabilir
+    permission_classes = (AllowAny,)
     serializer_class = RegisterSerializer
 
 
@@ -27,7 +27,6 @@ class ProfileView(APIView):
         return Response(serializer.errors, status=400)
 
 
-# Şifre Değiştirme
 class ChangePasswordView(APIView):
     permission_classes = [IsAuthenticated]
 
