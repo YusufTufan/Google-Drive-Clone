@@ -48,3 +48,8 @@ redis_data/
 docker-compose.override.yml
 .coverage
 htmlcov/
+
+# --- Observability & Search Data ---
+prometheus_data/
+grafana_data/
+meilisearch_data/
