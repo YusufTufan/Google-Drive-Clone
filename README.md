@@ -1,6 +1,6 @@
 # 🚀 NexusDrive - Full Stack Cloud Storage Solution
 
-![License](https://img.shields.io/badge/license-MIT-blue.svg) ![React](https://img.shields.io/badge/Frontend-React-61DAFB) ![Django](https://img.shields.io/badge/Backend-Django-092E20)
+![License](https://img.shields.io/badge/license-MIT-blue.svg) ![React](https://img.shields.io/badge/Frontend-React-61DAFB) ![Django](https://img.shields.io/badge/Backend-Django-092E20) ![Kubernetes](https://img.shields.io/badge/Orchestration-Kubernetes-326CE5)
 
 **NexusDrive**, modern web teknolojileri kullanılarak geliştirilmiş, güvenli, ölçeklenebilir ve kullanıcı dostu bir dosya depolama ve yönetim sistemidir (Google Drive Klonu).
 
@@ -15,49 +15,57 @@ Bu proje; dosya versiyonlama, çoklu yükleme, sürükle-bırak desteği ve deta
 * **Sürükle & Bırak (Drag & Drop):** Dosyaları ve klasörleri sürükleyerek yükleme veya taşıma.
 * **Çoklu Yükleme (Bulk Upload):** Aynı anda yüzlerce dosyayı progress bar eşliğinde yükleme.
 * **Gelişmiş Görünümler:** Izgara (Grid) ve Liste (List) görünümleri arasında anlık geçiş.
+* **Hızlı Arama:** **Meilisearch** entegrasyonu ile milyonlarca dosya arasında milisaniyeler içinde arama.
 
 ### 🛡️ Güvenlik ve Paylaşım
-* **İzole Alanlar:** Her kullanıcı sadece kendi dosyalarına erişebilir.
-* **Güvenli Paylaşım:** Dosya ve klasörleri diğer kullanıcılarla paylaşma ve yetki yönetimi.
-* **JWT Authentication:** Güvenli oturum yönetimi.
+* **İzole Alanlar:** Her kullanıcı sadece kendi dosyalarına erişebilir (JWT tabanlı kimlik doğrulama).
+* **Bulut Depolama:** AWS S3 uyumlu **MinIO** ile yüksek performanslı nesne depolama.
+* **Kubernetes (K8s):** Deployment, Service ve PVC yapılandırmaları ile tam konteyner orkestrasyonu.
 
 ### ⚙️ Gelişmiş Özellikler
 * **Otomatik Thumbnail:** Yüklenen görseller için backend tarafında (Pillow) otomatik önizleme oluşturma.
 * **Dosya Yaşam Döngüsü:** Yıldızlama, Spam Bildirme, Çöp Kutusu ve Geri Yükleme mekanizmaları.
 * **Dinamik Kota Takibi:** Kullanılan alanı klasör boyutlarıyla birlikte hesaplayan akıllı sistem.
-* **Backend & Depolama:** Dosyalar **MinIO (S3 Compatible)** üzerinde saklanır, veritabanı olarak **SQLite** (Geliştirme) kullanılır.
+* **Backend & Depolama:** Dosyalar **MinIO (S3 Compatible)** üzerinde saklanır, veritabanı olarak **PostgreSQL** (Geliştirme) kullanılır.
 
 ---
 
 ## 🛠️ Teknoloji Yığını (Tech Stack)
 
-* **Frontend:** React.js, Tailwind CSS, Axios
-* **Backend:** Django, Django REST Framework (DRF)
-* **Depolama (Storage):** MinIO (AWS S3 Uyumlu)
-* **Görüntü İşleme:** Pillow (PIL)
-* **Veritabanı:** SQLite (Prodüksiyon için PostgreSQL önerilir)
+- **Frontend:** React, Tailwind CSS, Axios
+- **Backend:** Django REST Framework, PostgreSQL
+- **Search Engine:** Meilisearch
+- **Storage:** MinIO (S3 Compatible)
+- **DevOps:** Docker, Kubernetes (K8s)
+- **Monitoring:** Prometheus & Grafana
 
 ---
 
-## 🚀 Kurulum (Local Development)
-
-Sistemi tek komutla ayağa kaldırmak için Docker kullanabilirsiniz.
-
-### Repoyu Klonlayın:
+🚀 Kurulum Rehberi (Installation Guide)
+Sistemi yerel ortamınızda iki farklı yöntemle ayağa kaldırabilirsiniz.
+## 1. Yöntem: Kubernetes (Önerilen / Production-Ready)
+Bu yöntemle projeyi tam bir Cluster mimarisinde çalıştırabilirsiniz.
+Gereksinimler: Docker Desktop (Kubernetes Enabled) veya Minikube.Tüm ### 1. Servisleri Başlatın:
 ```bash
-git clone https://github.com/YusufTufan/Google-Drive-Clone.git
-cd Google-Drive-Clone
+kubectl apply -f .
 ```
+Bu komut; Backend, Frontend, Veritabanı, MinIO ve Meilisearch bileşenlerini otomatik olarak yapılandırır.
+### Erişim İçin Tünelleri Açın (Port-Forward):
+Servislere localhost üzerinden erişmek için aşağıdaki tünelleri ayrı terminallerde başlatın:
+- **Frontend:** kubectl port-forward svc/frontend 3000:3000
+- **Backend:** kubectl port-forward svc/backend 8000:8000
+- **MinIO:** kubectl port-forward svc/minio 9001:9001
 
-### Sistemi Başlatın:
+## 2. Yöntem: Docker Compose (Hızlı Başlatma)
+Geliştirme aşamasında hızlıca ayağa kaldırmak için:
 ```bash
 docker-compose up -d --build
 ```
-### Erişim Noktaları:
+🔗 Erişim ve Kimlik BilgileriSistem ayağa kalktıktan sonra aşağıdaki adreslerden bileşenlere erişebilirsiniz. Kubernetes modunda çalışıyorsanız, servis tünellerinin (port-forward) açık olduğundan emin olun.ServisAdresKimlik BilgileriUygulama (Frontend)http://localhost:3000-Backend APIhttp://localhost:8000/api/Kayıtlı KullanıcıMinIO Consolehttp://localhost:9001User: minioadminMeilisearchhttp://localhost:7700Master Key: nexus_master_keyPostgreSQLlocalhost:5432User: nexus_user
 
-## Uygulama: http://localhost:3000
-## Backend API: http://localhost:8000
-## MinIO Console: http://localhost:9001 (Kullanıcı: minioadmin | Şifre: minioadmin)
+⚠️ Önemli Not (İlk Kurulum)Sistemi ilk kez çalıştırdığınızda dosya yükleyebilmek için MinIO panelinde (localhost:9001) şu adımları yapmalısınız:
+1. nexus-drive-bucket adında bir kova (bucket) oluşturun.
+2. Kova ayarlarından Anonymous erişim politikasını Read and Write olarak güncelleyin.
 
 ## 🗺️ Geliştirme Yol Haritası (Development Roadmap)
 
@@ -79,9 +87,9 @@ Proje, modern bulut mimarisi standartlarına uygun olarak 3 ana fazda planlanmı
 
 ### ☸️ Faz 3: High Availability & Observability (Üzerinde çalışılıyor.)
 *Sistemin ölçeklenebilirliği ve izlenebilirliğinin sağlanması.*
-- [ ] **Kubernetes (K8s) Deployment:** Uygulamanın Cluster yapısına taşınması (Deployment, Service, PVC yapılandırmaları).
-- [ ] **Observability Stack:** **Prometheus** ile sistem metriklerinin toplanması ve **Grafana** ile görselleştirilmesi.
-- [ ] **Gelişmiş arama motoru entegrasyonu**.
+- [X] **Kubernetes (K8s) Deployment:** Uygulamanın Cluster yapısına taşınması (Deployment, Service, PVC yapılandırmaları).
+- [X] **Observability Stack:** **Prometheus** ile sistem metriklerinin toplanması ve **Grafana** ile görselleştirilmesi.
+- [X] **Gelişmiş arama motoru entegrasyonu**.
 
 📄 Lisans
 Bu proje MIT lisansı ile lisanslanmıştır.
