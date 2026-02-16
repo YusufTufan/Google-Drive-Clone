@@ -61,7 +61,15 @@ Geliştirme aşamasında hızlıca ayağa kaldırmak için:
 ```bash
 docker-compose up -d --build
 ```
-🔗 Erişim ve Kimlik BilgileriSistem ayağa kalktıktan sonra aşağıdaki adreslerden bileşenlere erişebilirsiniz. Kubernetes modunda çalışıyorsanız, servis tünellerinin (port-forward) açık olduğundan emin olun.ServisAdresKimlik BilgileriUygulama (Frontend)http://localhost:3000-Backend APIhttp://localhost:8000/api/Kayıtlı KullanıcıMinIO Consolehttp://localhost:9001User: minioadminMeilisearchhttp://localhost:7700Master Key: nexus_master_keyPostgreSQLlocalhost:5432User: nexus_user
+🔗 Erişim ve Kimlik BilgileriSistem ayağa kalktıktan sonra aşağıdaki adreslerden bileşenlere erişebilirsiniz. Kubernetes modunda çalışıyorsanız, servis tünellerinin (port-forward) açık olduğundan emin olun.
+| Servis | Adres | Kimlik Bilgileri |
+| :--- | :--- | :--- |
+| **Uygulama (Frontend)** | `http://localhost:3000` | - |
+| **Backend API** | `http://localhost:8000/api/` | Kayıtlı Kullanıcı |
+| **MinIO Console** | `http://localhost:9001` | **User:** `minioadmin` \| **Pass:** `minioadmin` |
+| **Meilisearch** | `http://localhost:7700` | **Key:** `nexus_master_key` |
+| **PostgreSQL** | `localhost:5432` | **User:** `nexus_user` \| **DB:** `nexus_drive` |
+| **Prometheus** | `http://localhost:9090` | - |
 
 ⚠️ Önemli Not (İlk Kurulum)Sistemi ilk kez çalıştırdığınızda dosya yükleyebilmek için MinIO panelinde (localhost:9001) şu adımları yapmalısınız:
 1. nexus-drive-bucket adında bir kova (bucket) oluşturun.
@@ -85,17 +93,10 @@ Proje, modern bulut mimarisi standartlarına uygun olarak 3 ana fazda planlanmı
 - [x] **Orchestration:** `docker-compose` ile tüm servislerin (App, DB, Storage) tek komutla ayağa kaldırılması.
 - [x] **Veritabanı Migrasyonu:** Geliştirme veritabanından (SQLite) üretim veritabanına (**PostgreSQL**) geçiş.
 
-### ☸️ Faz 3: High Availability & Observability (Tamamlandı)
-*Sistemin ölçeklenebilirliği ve izlenebilirliğinin sağlanması.*
-<<<<<<< HEAD
-- [X] **Kubernetes (K8s) Deployment:** Uygulamanın Cluster yapısına taşınması (Deployment, Service, PVC yapılandırmaları).
-- [X] **Observability Stack:** **Prometheus** ile sistem metriklerinin toplanması ve **Grafana** ile görselleştirilmesi.
-- [X] **Gelişmiş arama motoru entegrasyonu**.
-=======
-- [x] **Kubernetes (K8s) Deployment:** Uygulamanın Cluster yapısına taşınması (Deployment, Service, PVC yapılandırmaları).
-- [x] **Observability Stack:** **Prometheus** ile sistem metriklerinin toplanması ve **Grafana** ile görselleştirilmesi.
-- [x] **Gelişmiş arama motoru entegrasyonu**.
->>>>>>> 9029009f837d8a837e05be4a7a236e5f610595b7
+### ✅ Faz 3: High Availability & Observability (Tamamlandı)
+- [x] **Kubernetes Deployment:** Uygulamanın Cluster yapısına taşınması (Deployment, Service, PVC).
+- [x] **Gelişmiş Arama:** Meilisearch ile tam metin arama (Full-text search) desteği.
+- [x] **Monitoring:** Prometheus ve Grafana ile sistem metriklerinin izlenmesi.
 
 📄 Lisans
 Bu proje MIT lisansı ile lisanslanmıştır.
