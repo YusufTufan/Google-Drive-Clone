@@ -77,11 +77,11 @@ Proje, modern bulut mimarisi standartlarına uygun olarak 3 ana fazda planlanmı
 - [x] **Orchestration:** `docker-compose` ile tüm servislerin (App, DB, Storage) tek komutla ayağa kaldırılması.
 - [x] **Veritabanı Migrasyonu:** Geliştirme veritabanından (SQLite) üretim veritabanına (**PostgreSQL**) geçiş.
 
-### ☸️ Faz 3: High Availability & Observability (Üzerinde çalışılıyor.)
+### ☸️ Faz 3: High Availability & Observability (Tamamlandı)
 *Sistemin ölçeklenebilirliği ve izlenebilirliğinin sağlanması.*
-- [ ] **Kubernetes (K8s) Deployment:** Uygulamanın Cluster yapısına taşınması (Deployment, Service, PVC yapılandırmaları).
-- [ ] **Observability Stack:** **Prometheus** ile sistem metriklerinin toplanması ve **Grafana** ile görselleştirilmesi.
-- [ ] **Gelişmiş arama motoru entegrasyonu**.
+- [x] **Kubernetes (K8s) Deployment:** Uygulamanın Cluster yapısına taşınması (Deployment, Service, PVC yapılandırmaları).
+- [x] **Observability Stack:** **Prometheus** ile sistem metriklerinin toplanması ve **Grafana** ile görselleştirilmesi.
+- [x] **Gelişmiş arama motoru entegrasyonu**.
 
 📄 Lisans
 Bu proje MIT lisansı ile lisanslanmıştır.
