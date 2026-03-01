@@ -22,3 +22,6 @@ python-dotenv==1.0.0
 meilisearch==0.28.3
 
 django-prometheus==2.3.1
+
+elasticsearch
+django-elasticsearch-dsl

@@ -47,7 +47,9 @@ INSTALLED_APPS = [
     "users",  # Users uygulaması
     "rest_framework_simplejwt",  # JWT authentication için
     "django_prometheus",  # Prometheus monitoring için
+    "django_elasticsearch_dsl",  # Elasticsearch entegrasyonu için
 ]
+
 
 MIDDLEWARE = [
     "django_prometheus.middleware.PrometheusBeforeMiddleware",
@@ -190,4 +192,11 @@ SIMPLE_JWT = {
     "SIGNING_KEY": SECRET_KEY,
     "VERIFYING_KEY": None,
     "AUTH_HEADER_TYPES": ("Bearer",),
+}
+
+
+ELASTICSEARCH_DSL = {
+    "default": {
+        "hosts": "http://elasticsearch:9200",  # K8s servis adımız
+    },
 }
