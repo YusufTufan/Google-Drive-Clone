@@ -101,6 +101,8 @@ Proje, modern bulut mimarisi standartlarına uygun olarak 3 ana fazda planlanmı
 - [x] **Enterprise Search:** Elasticsearch entegrasyonu ile dosya metadatalarının (size, extension, date) K8s üzerinde izole indekslenmesi ve NoSQL tabanlı arama optimizasyonu.
 - [x] **Monitoring:** Prometheus ve Grafana ile sistem metriklerinin izlenmesi.
 
+
+
 📄 Lisans
 Bu proje MIT lisansı ile lisanslanmıştır.
 
