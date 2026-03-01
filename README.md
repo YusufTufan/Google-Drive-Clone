@@ -15,7 +15,7 @@ Bu proje; dosya versiyonlama, çoklu yükleme, sürükle-bırak desteği ve deta
 * **Sürükle & Bırak (Drag & Drop):** Dosyaları ve klasörleri sürükleyerek yükleme veya taşıma.
 * **Çoklu Yükleme (Bulk Upload):** Aynı anda yüzlerce dosyayı progress bar eşliğinde yükleme.
 * **Gelişmiş Görünümler:** Izgara (Grid) ve Liste (List) görünümleri arasında anlık geçiş.
-* **Hızlı Arama:** **Meilisearch** entegrasyonu ile milyonlarca dosya arasında milisaniyeler içinde arama.
+* **Kurumsal Düzey Arama (Enterprise Search):** **Elasticsearch** entegrasyonu ile dosyaların metadataları (isim, boyut, uzantı, yüklenme tarihi) üzerinde Inverted Index mimarisiyle milisaniyeler içinde kompleks filtreleme ve arama.
 
 ### 🛡️ Güvenlik ve Paylaşım
 * **İzole Alanlar:** Her kullanıcı sadece kendi dosyalarına erişebilir (JWT tabanlı kimlik doğrulama).
@@ -34,7 +34,7 @@ Bu proje; dosya versiyonlama, çoklu yükleme, sürükle-bırak desteği ve deta
 
 - **Frontend:** React, Tailwind CSS, Axios
 - **Backend:** Django REST Framework, PostgreSQL
-- **Search Engine:** Meilisearch
+- **Search & Analytics Engine:** Elasticsearch, django-elasticsearch-dsl
 - **Storage:** MinIO (S3 Compatible)
 - **DevOps:** Docker, Kubernetes (K8s)
 - **Monitoring:** Prometheus & Grafana
@@ -52,9 +52,10 @@ kubectl apply -f .
 Bu komut; Backend, Frontend, Veritabanı, MinIO ve Meilisearch bileşenlerini otomatik olarak yapılandırır.
 ### Erişim İçin Tünelleri Açın (Port-Forward):
 Servislere localhost üzerinden erişmek için aşağıdaki tünelleri ayrı terminallerde başlatın:
-- **Frontend:** kubectl port-forward svc/frontend 3000:3000
-- **Backend:** kubectl port-forward svc/backend 8000:8000
-- **MinIO:** kubectl port-forward svc/minio 9001:9001
+- **Frontend:** `kubectl port-forward svc/frontend 3000:3000`
+- **Backend:** `kubectl port-forward svc/backend 8000:8000`
+- **MinIO:** `kubectl port-forward svc/minio 9001:9001`
+- **Elasticsearch:** `kubectl port-forward svc/elasticsearch 9200:9200`
 
 ## 2. Yöntem: Docker Compose (Hızlı Başlatma)
 Geliştirme aşamasında hızlıca ayağa kaldırmak için:
@@ -67,9 +68,11 @@ docker-compose up -d --build
 | **Uygulama (Frontend)** | `http://localhost:3000` | - |
 | **Backend API** | `http://localhost:8000/api/` | Kayıtlı Kullanıcı |
 | **MinIO Console** | `http://localhost:9001` | **User:** `minioadmin` \| **Pass:** `minioadmin` |
-| **Meilisearch** | `http://localhost:7700` | **Key:** `nexus_master_key` |
+| **Elasticsearch** | `http://localhost:9200` | - (K8s içi haberleşme) |
 | **PostgreSQL** | `localhost:5432` | **User:** `nexus_user` \| **DB:** `nexus_drive` |
 | **Prometheus** | `http://localhost:9090` | - |
+
+
 
 ⚠️ Önemli Not (İlk Kurulum)Sistemi ilk kez çalıştırdığınızda dosya yükleyebilmek için MinIO panelinde (localhost:9001) şu adımları yapmalısınız:
 1. nexus-drive-bucket adında bir kova (bucket) oluşturun.
@@ -95,7 +98,7 @@ Proje, modern bulut mimarisi standartlarına uygun olarak 3 ana fazda planlanmı
 
 ### ✅ Faz 3: High Availability & Observability (Tamamlandı)
 - [x] **Kubernetes Deployment:** Uygulamanın Cluster yapısına taşınması (Deployment, Service, PVC).
-- [x] **Gelişmiş Arama:** Meilisearch ile tam metin arama (Full-text search) desteği.
+- [x] **Enterprise Search:** Elasticsearch entegrasyonu ile dosya metadatalarının (size, extension, date) K8s üzerinde izole indekslenmesi ve NoSQL tabanlı arama optimizasyonu.
 - [x] **Monitoring:** Prometheus ve Grafana ile sistem metriklerinin izlenmesi.
 
 📄 Lisans
