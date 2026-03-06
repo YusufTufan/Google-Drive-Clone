@@ -1,0 +1,14 @@
+{
+  "name": "postgres-source-connector",
+  "config": {
+    "connector.class": "io.debezium.connector.postgresql.PostgresConnector",
+    "database.hostname": "db",
+    "database.port": "5432",
+    "database.user": "nexus_user",
+    "database.password": "nexus_password123",
+    "database.dbname": "nexus_drive",
+    "topic.prefix": "nexus",
+    "table.include.list": "public.drive_file",
+    "plugin.name": "pgoutput"
+  }
+}

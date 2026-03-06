@@ -28,6 +28,7 @@ spec:
       containers:
       - name: postgres
         image: postgres:15-alpine
+        args: ["postgres", "-c", "wal_level=logical"]
         resources:
           requests:
             memory: "256Mi"
