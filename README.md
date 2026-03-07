@@ -1,6 +1,6 @@
 # 🚀 NexusDrive - Full Stack Cloud Storage Solution
 
-![License](https://img.shields.io/badge/license-MIT-blue.svg) ![React](https://img.shields.io/badge/Frontend-React-61DAFB) ![Django](https://img.shields.io/badge/Backend-Django-092E20) ![Kubernetes](https://img.shields.io/badge/Orchestration-Kubernetes-326CE5)
+![License](https://img.shields.io/badge/license-MIT-blue.svg) ![React](https://img.shields.io/badge/Frontend-React-61DAFB) ![Django](https://img.shields.io/badge/Backend-Django-092E20) ![Kubernetes](https://img.shields.io/badge/Orchestration-Kubernetes-326CE5) ![Kafka](https://img.shields.io/badge/Data_Streaming-Kafka-231F20)
 
 **NexusDrive**, modern web teknolojileri kullanılarak geliştirilmiş, güvenli, ölçeklenebilir ve kullanıcı dostu bir dosya depolama ve yönetim sistemidir (Google Drive Klonu).
 
@@ -27,6 +27,7 @@ Bu proje; dosya versiyonlama, çoklu yükleme, sürükle-bırak desteği ve deta
 * **Dosya Yaşam Döngüsü:** Yıldızlama, Spam Bildirme, Çöp Kutusu ve Geri Yükleme mekanizmaları.
 * **Dinamik Kota Takibi:** Kullanılan alanı klasör boyutlarıyla birlikte hesaplayan akıllı sistem.
 * **Backend & Depolama:** Dosyalar **MinIO (S3 Compatible)** üzerinde saklanır, veritabanı olarak **PostgreSQL** (Geliştirme) kullanılır.
+* **Real-time Data Sync (CDC):** **Debezium** ve **Apache Kafka** kullanılarak PostgreSQL veritabanındaki değişikliklerin (Insert, Update, Delete) anlık (milisaniyelik) olarak yakalanıp, uygulama katmanından bağımsız bir şekilde asenkron olarak Elasticsearch'e aktarılması (Change Data Capture mimarisi).
 
 ---
 
@@ -34,6 +35,7 @@ Bu proje; dosya versiyonlama, çoklu yükleme, sürükle-bırak desteği ve deta
 
 - **Frontend:** React, Tailwind CSS, Axios
 - **Backend:** Django REST Framework, PostgreSQL
+- **Data Streaming & CDC:** Apache Kafka, Zookeeper, Debezium Connect
 - **Search & Analytics Engine:** Elasticsearch, django-elasticsearch-dsl
 - **Storage:** MinIO (S3 Compatible)
 - **DevOps:** Docker, Kubernetes (K8s)
@@ -69,6 +71,8 @@ docker-compose up -d --build
 | **Backend API** | `http://localhost:8000/api/` | Kayıtlı Kullanıcı |
 | **MinIO Console** | `http://localhost:9001` | **User:** `minioadmin` \| **Pass:** `minioadmin` |
 | **Elasticsearch** | `http://localhost:9200` | - (K8s içi haberleşme) |
+| **Debezium API** | `http://localhost:8083` | - (CDC Yönetimi) |
+| **Kafka Broker** | `kafka:9092` | - (K8s içi asenkron haberleşme) |
 | **PostgreSQL** | `localhost:5432` | **User:** `nexus_user` \| **DB:** `nexus_drive` |
 | **Prometheus** | `http://localhost:9090` | - |
 
@@ -96,12 +100,17 @@ Proje, modern bulut mimarisi standartlarına uygun olarak 3 ana fazda planlanmı
 - [x] **Orchestration:** `docker-compose` ile tüm servislerin (App, DB, Storage) tek komutla ayağa kaldırılması.
 - [x] **Veritabanı Migrasyonu:** Geliştirme veritabanından (SQLite) üretim veritabanına (**PostgreSQL**) geçiş.
 
-### ✅ Faz 3: High Availability & Observability (Tamamlandı)
+### ✅ Faz 3: High Availability, Observability & Data Pipeline (Tamamlandı)
 - [x] **Kubernetes Deployment:** Uygulamanın Cluster yapısına taşınması (Deployment, Service, PVC).
-- [x] **Enterprise Search:** Elasticsearch entegrasyonu ile dosya metadatalarının (size, extension, date) K8s üzerinde izole indekslenmesi ve NoSQL tabanlı arama optimizasyonu.
+- [x] **Enterprise Search:** Elasticsearch entegrasyonu ile dosya metadatalarının K8s üzerinde izole indekslenmesi ve NoSQL tabanlı arama optimizasyonu.
+- [x] **Change Data Capture (CDC):** PostgreSQL `wal_level=logical` konfigürasyonu, Kafka ve Debezium kullanılarak veritabanı ile arama motoru arasında kayıpsız (lossless) ve asenkron veri senkronizasyonu.
 - [x] **Monitoring:** Prometheus ve Grafana ile sistem metriklerinin izlenmesi.
 
-
+---
+### 🏗️ Mimari Not: Neden Debezium & Kafka?
+Geleneksel web uygulamalarında veritabanı ile arama motoru senkronizasyonu genellikle uygulama katmanında (örn: Django Signals) yapılır. Ancak bu durum, backend servisinin çökmesi veya kilitlenmesi durumunda veritabanı ile Elasticsearch arasında **Data Inconsistency (Veri Tutarsızlığı)** yaratır. 
+NexusDrive projesinde bu riski tamamen ortadan kaldırmak için; veritabanı loglarını (WAL) doğrudan dinleyen, uygulama katmanını by-pass eden ve veriyi Kafka mesaj kuyruğu üzerinden güvenle taşıyan "Debezium CDC Mimarisi" tercih edilerek Enterprise düzeyde veri güvenilirliği sağlanmıştır.
+---
 
 📄 Lisans
 Bu proje MIT lisansı ile lisanslanmıştır.
