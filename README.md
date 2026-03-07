@@ -106,11 +106,11 @@ Proje, modern bulut mimarisi standartlarına uygun olarak 3 ana fazda planlanmı
 - [x] **Change Data Capture (CDC):** PostgreSQL `wal_level=logical` konfigürasyonu, Kafka ve Debezium kullanılarak veritabanı ile arama motoru arasında kayıpsız (lossless) ve asenkron veri senkronizasyonu.
 - [x] **Monitoring:** Prometheus ve Grafana ile sistem metriklerinin izlenmesi.
 
----
+--
 🏗️ Mimari Not: Neden Debezium & Kafka?
 Geleneksel web uygulamalarında veritabanı ile arama motoru senkronizasyonu genellikle uygulama katmanında (örn: Django Signals) yapılır. Ancak bu durum, backend servisinin çökmesi veya kilitlenmesi durumunda veritabanı ile Elasticsearch arasında **Data Inconsistency (Veri Tutarsızlığı)** yaratır. 
 NexusDrive projesinde bu riski tamamen ortadan kaldırmak için; veritabanı loglarını (WAL) doğrudan dinleyen, uygulama katmanını by-pass eden ve veriyi Kafka mesaj kuyruğu üzerinden güvenle taşıyan "Debezium CDC Mimarisi" tercih edilerek Enterprise düzeyde veri güvenilirliği sağlanmıştır.
----
+--
 
 📄 Lisans
 Bu proje MIT lisansı ile lisanslanmıştır.
